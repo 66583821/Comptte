@@ -27,6 +27,7 @@ if (isset($_POST['validate'])) {
     $sexe = $_POST['sexe'];
     $email = $_POST['email'];
     $password = password_hash($_POST['mot_de_passe'], PASSWORD_DEFAULT);
+    
 
     // Préparer la requête d'insertion
     $sql = "INSERT INTO users (nom, prenom, date_de_naissance, sexe, email, mot_de_passe)
@@ -75,7 +76,7 @@ if (isset($_POST['validate'])) {
             <input type="password" class="form-control" name="mot_de_passe">
         </div>
         <button type="submit" class="btn btn-primary" name="validate">S'inscrire</button>
-        z
+        
         <br><br>
         <a href="login.php"><p>J'ai déjà un compte, je me connecte</p></a>
    </form>

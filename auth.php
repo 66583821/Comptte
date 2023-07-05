@@ -1,36 +1,55 @@
 <?php
-// Informations de connexion à la base de données
-$servername = "localhost";
-$username = "root";
+// // Informations de connexion à la base de données
+ $servername = "localhost";
+ $username = "root";
 $password = "";
-$dbname = "gestion";
+ $dbname = "gestion";
 
-// Créer une connexion
-$conn = new mysqli($servername, $username, $password, $dbname);
+// Connexion à la base de données
+$conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
+$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-if (isset($_POST['validate'])) {
-    // Récupérer les valeurs saisies dans le formulaire
-    $email = $_POST['email'];
-    $password = $_POST['password'];
-    $sql = "SELECT * FROM `users` WHERE `email`= '$email' AND `mot_de_passe`='$password'";
-    $reqq= mysqli_query($conn, $sql);
-    $row= mysqli_fetch_array($reqq);
-    if(is_array($row)){
-        $_SESSION["email"]=$row["email"];
-        $_SESSION["password"] = $row["mot_de_passe"];
-    }else{
-        echo "echec de connection";
+// Récupération des données de l'utilisateur à partir du formulaire
+$email = $_POST['email'];
+$password = $_POST['password'];
+
+$query = "SELECT * FROM `users` WHERE `email`= :email";
+$stmt = $conn->prepare($query);
+$stmt->bindParam(':email', $email);
+$stmt->execute();
+
+// Vérification du mot de passe
+if ($stmt->rowCount() > 0) {
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    $hashedPassword = $row['mot_de_passe'];
+    $nomu = $row['nom'];
+    if (password_verify($password, $hashedPassword)) {
+        // Le mot de passe est valide, l'utilisateur est authentifié
+        echo "Authentification réussie !";
+    } else {
+        // Le mot de passe est invalide
+        echo "Nom d'utilisateur ou mot de passe incorrect.";
         header("location:login.php");
     }
+} else {
+    // L'utilisateur n'existe pas
+    echo "Nom d'utilisateur ou mot de passe incorrect.";
+    header("location:login.php");
 }
-
-if (isset($_SESSION["email"])) {
-
-    header("location:acceuil.html");
-}
-
-if (isset($_SESSION['visiteur'])) {
-    echo "Bonjour ".$_SESSION['visiteur']['nom']." (deconnexion)";
-  }
-
 ?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+<h1>BIENVENUE <?php echo  $nomu ;  ?></h1>  
+
+  <!-- Formulaire de déconnexion -->
+  <form method="POST" action="logout.php">
+       <a href="#"> <button type="submit" class="btn btn-primary" name="logout">Se déconnecter</button></a>
+    </form>
+</body>
+</html>

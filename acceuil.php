@@ -1,3 +1,14 @@
+<?php
+@include 'database.php';
+session_start();
+if (!isset($_SESSION["nom"])){
+    header("Location: inscription.php");
+
+}
+?>
+
+
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -12,6 +23,9 @@
     <form method="POST" action="logout.php">
        <a href="#"> <button type="submit" class="btn btn-primary" name="logout">Se déconnecter</button></a>
     </form>
-    <h1>BIENVENUE</h1>
+    <h1>BIENVENUE <span><?php echo $_SESSION['nom'] ?></span></h1>
+    
+        <
+    </form>
 </body>
 </html>
